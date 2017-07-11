@@ -1,10 +1,7 @@
-#-------------------------------------------------------------------------------
 #!/usr/bin/env python
-# ========= BLENDER ADD-ON =====================================================
-
 bl_info = {
     "name":         "Join Or Group By Pattern",
-    "author":       "Jon Ardaron (J.R.Balzer)",
+    "author":       "worlddevelopment",
     "version":      (2, 0),
     "blender":      (2, 6, 5),
     "location":     "View3D > Tool Shelf > Join Group By Pattern",
@@ -20,14 +17,8 @@ bl_info = {
     #,"warning":      ""
 }
 
-
-# ------- INFORMATION ----------------------------------------------------------
-# Addon-release Blender Version: 2.65 (removed access to ro context variables)
-#
-# Addon-Version: v20 - 2013-01-12
-# Author: Jon Ardaron, FairieTale Productions GbR
-#
-# ------- DESCRIPTION ----------------------------------------------------------
+# ------------------------------------------------------------------------------
+# ------- DESCRIPTION
 #
 # """PURPOSE"""
 # JOINING OR GROUPING MESHES ACCORDING TO MESH NAME-REGEX
@@ -54,17 +45,16 @@ bl_info = {
 #   Otherwise (if grouping is desired) a new group will be
 #   created to contain all the objects matching the given regex.
 
-# ------- LICENSING ------------------------------------------------------------
-# (c) Copyright FarieTree Productions J.R.B. jan@ardaron.de
-# It's free, as is, open source and property to Earth. But without warranty.
-# Thus use it, improve it, recreate it and please at least keep the
-# origin as in usual citation, i.e. inclucde this Copyright note.
-#
+
 # ------------------------------------------------------------------------------
+# ------- LICENSING
+# CC-BY-SA
+# https://creativecommons.org/licenses/by-sa/4.0/
 
 
 
-#------- IMPORTS --------------------------------------------------------------#
+# ------------------------------------------------------------------------------
+#------- IMPORTS
 import bpy
 import re
 
@@ -73,7 +63,7 @@ from bpy.props import IntProperty, StringProperty, BoolProperty, EnumProperty
 
 
 
-#------- GLOBALS --------------------------------------------------------------#
+#------- GLOBALS
 #show debug messages in blender console (that is the not python console!)
 debug = False#True
 
@@ -91,7 +81,7 @@ TARGET_SCENE = 0
 originally_selected = {}
 
 
-#------- FUNCTIONS ------------------------------------------------------------#
+#------- FUNCTIONS
 #COMMAND BASE FUNCTION
 def main(context):
     global originally_selected
@@ -417,11 +407,9 @@ def tidyUpNames():
 
 ###############################
 # DYNAMIC SELECT FUNCTIION CALL
-##
 # one out of the following select functions is called
 ###############################
 
-#SELECT BY WILDCARDS---------------------------------------------
 def select_by_wildcards(unix_pattern): #given by blender
     global extend_selection
     global case_sensitive
@@ -436,7 +424,8 @@ def select_by_wildcards(unix_pattern): #given by blender
     )
     return selection_result
 
-#DESELECT IF ORIGINALLY NOT BEEN SELECTED
+
+
 def deselect_ifOriginallyNotBeenSelected(*args):
     global originally_selected
     if debug:
@@ -460,10 +449,9 @@ def deselect_ifOriginallyNotBeenSelected(*args):
                 if debug:
                     print('deselcting o', originally_sel_o)
                 originally_sel_o.select = False
-            
-    
 
-#SELECT BY REGEX-------------------------------------------------
+
+
 def select_by_regex(pattern):
     if debug:
         print('select_by_regex at your Service ...')
@@ -493,11 +481,12 @@ def select_by_regex(pattern):
 
 
 
-
 def nop(*args):
     pass
 
-#CONFIGURATION OBJECTS-------------------------------------------
+
+
+#CONFIGURATION OBJECTS
 #using predefined static configurations - has to be after function definition
 select_configurations = {
     #'wildcards'
@@ -517,11 +506,9 @@ selection_pool = {
 
 ################################
 # THIS FUNCTION HANDLES WHICH OF THE TWO SELECT PATHS IS TO BE FOLLOWED
-##
-#the dynamic function
+# the dynamic function
 ################################
 
-#SELECT USING CONFIGURATION
 def select_using_configuration(config, unix_pattern, *args, **kwargs):
     if debug:
         print('select_using_configuration at your Service ...')
@@ -540,25 +527,18 @@ def select_using_configuration(config, unix_pattern, *args, **kwargs):
         
 
 
-
-#using dynamically buildable functions
-#SELECT
+# using dynamically buildable functions
 #def select(funcsToCall_arrOfstr, *args, **kwargs):
 #    for func in funcsToCall_arrOfstr:
 #        globals()[func](args, kwargs)
 
-#SELECT
 #def select_callAppropriate_str(funcsToCall_str, *context, **kwregex):
 #    for func in funcsToCall_str.split():
 #        globals()[func](*context, **kwargs)
 
 
 
-
-
-
-
-#HELPER - ISTHERESELECTION
+#-------HELPER
 def isThereSelectionThenGet():
     if debug:
         print('isThereSelectionThenGet at your Service ...')
@@ -577,7 +557,7 @@ def isThereSelectionThenGet():
     return sel
 
 
-#HELPER - ISTHEREACTIVEOBJECT
+
 def isThereActiveObjectThenGet():
     if debug:
         print('isThereActiveObjectThenGet at your Service ...')
@@ -601,9 +581,8 @@ def isThereActiveObjectThenGet():
     return active_obj
 
 
-#HELPER - GETBASENAME
-#@return string:basename aka cleanname
 def getBaseName(obj):
+    """Turn obj base name into a clean string representation."""
     if debug:
         print('getBaseName at your Service ...')
     
@@ -630,19 +609,15 @@ def getBaseName(obj):
         return obj.name
     
 
-#------- CLASSES --------------------------------------------------------------#
 
 
-#/**
-# * JoinOrGroupMatchingObjects
-# *
-# * Wraps some general attributes and some specific ones
-# * like the actual content of the regex input field.
-# *                               inheritance
-# */
+#-------------------------------------------------------------------------------
+#------- CLASSES
+
 class OBJECT_OT_Join_Or_Group_By_Wildcard(bpy.types.Operator):
-    """Performs the operation (i.e. joining or grouping) according to your settings."""
-    #=======ATTRIBUTES=========================================================#
+    """Wraps attributes like regex input field content. Performs the operation, i.e. joining or grouping.
+    """
+    #=======ATTRIBUTES
     bl_idname = "object.join_or_group_by_pattern"
     bl_label = "Either join or group objects matching a"
     " regex <prefix_scheme>#?([.][0-9]+)* where <prefix_scheme> may be a regex too."
@@ -650,9 +625,9 @@ class OBJECT_OT_Join_Or_Group_By_Wildcard(bpy.types.Operator):
     bl_register = True
     bl_undo = True
     
-    #=======CONSTRUCTION=======================================================#
+    #=======CONSTRUCTION
     #def __init__(self):
-    #=======METHODS============================================================#
+    #=======METHODS
     @classmethod
     def poll(cls, context):#it's the same without self (always inserted before)
         SCENE = 0
@@ -686,14 +661,9 @@ class OBJECT_OT_Join_Or_Group_By_Wildcard(bpy.types.Operator):
 
 
 
-
-#/**
-# * GUI Panel
-# *
-# * Two or more inputs: 1x chebox, 1x text input for the pattern.
-# * Extends Panel.
-# */
 class VIEW3D_PT_tools_joinorgroup_by_pattern(bpy.types.Panel):
+    """GUI panel for properties.
+    """
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'TOOLS'
     bl_label = 'Join Group By Pattern'
@@ -727,8 +697,6 @@ class VIEW3D_PT_tools_joinorgroup_by_pattern(bpy.types.Panel):
         col.row().prop(s, 'joinorgroupbypattern_in_pattern_type', expand = True)
         
         
-        
-        
         #splitbutton for enums (radio buttons) ...
         row = layout.row(align = True)
         #only relevant if mode set to join => active (additional option)
@@ -757,22 +725,16 @@ class VIEW3D_PT_tools_joinorgroup_by_pattern(bpy.types.Panel):
         col.row().prop(s, 'joinorgroupbypattern_in_selection_constraint', expand = True)
         
         
-        
         #submit, trigger chosen action
         row = layout.row(align = True)
         label = in_mode_str + in_influence_str + " matching objects"
         row.operator('object.join_or_group_by_pattern', icon='FILE_TICK', text = label)
-        
-        
-        
-        
-        
 
 
 
 
-#------- CALLBACKS - INPUT - AUTO EXPANSION --------------------------------------#
-#cALLBACK
+#-------------------------------------------------------------------------------
+#------- CALLBACKS - INPUT - AUTO EXPANSION
 def callback_in_pattern_changed(self, context):
     s = context.scene
     if (s.joinorgroupbypattern_in_pattern.find('#') != -1
@@ -784,17 +746,17 @@ def callback_in_pattern_changed(self, context):
         #callback_in__changed(context)
         #callback_in__changed(context)
         pass
-#
+
 def callback_in_auto_expansion_index_start_changed(self, context):
     in_auto_expansion_keep_up_integrity(context)
-#
+
 def callback_in_auto_expansion_index_end_changed(self, context):
     in_auto_expansion_keep_up_integrity(context)
-#
+
 def callback_in_a_e_digits_total_max_changed(self, context):
     in_auto_expansion_keep_up_integrity(context)
     #return None #required by update callbacks!
-#
+
 def in_auto_expansion_keep_up_integrity(context):
     #SCENE = 0
     #we're in auto-expansion mode, thus
@@ -816,12 +778,9 @@ def in_auto_expansion_keep_up_integrity(context):
 
 
 
+#-------------------------------------------------------------------------------
+#------- GENERAL BLENDER SETUP FUNCTIONS
 
-
-
-
-#------- GENERAL BLENDER SETUP FUNCTIONS --------------------------------------#
-#REGISTER
 def register():
     bpy.utils.register_module(__name__)
     #bpy.utils.register_class(OBJECT_OT_JoinOrGroupByWildcard)
@@ -936,7 +895,7 @@ def register():
     #pass
 
 
-#UNREGISTER
+
 def unregister():
     bpy.utils.unregister_module(__name__)
     #bpy.utils.unregister_class(OBJECT_OT_JoinOrGroupByWildcard)
@@ -954,7 +913,9 @@ def unregister():
     #pass
 
 
-#------- PROCEDURAL -----------------------------------------------------------#
+
+#-------------------------------------------------------------------------------
+#------- PROCEDURAL
 if __name__ == "__main__":
     #unregister()
     register()
